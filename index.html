@@ -750,22 +750,6 @@
   }
   document.getElementById('nascimento').max = new Date().toISOString().split('T')[0];
 
-  function irEtapa2() {
-    const n = val('c-nome',     document.getElementById('nome').value.trim().length >= 2);
-    const e = val('c-email',    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('email').value));
-    const w = val('c-whats',    document.getElementById('whatsapp').value.replace(/\D/g,'').length >= 10);
-    const b = val('c-nasc',     document.getElementById('nascimento').value !== '');
-    const v = val('c-vigencia', document.getElementById('vigencia').value !== '');
-    if(!n||!e||!w||!b||!v) return;
-    document.getElementById('t1').style.display='none';
-    document.getElementById('s1').style.display='block';
-    setTimeout(()=>{
-      document.getElementById('etapa1').style.display='none';
-      document.getElementById('etapa2').style.display='block';
-      document.getElementById('t1').style.display='inline';
-      document.getElementById('s1').style.display='none';
-    }, 700);
-  }
 
   function calcular() {
     const va   = parseFloat(document.getElementById('antes').value);
@@ -803,7 +787,6 @@
     document.getElementById('excesso').textContent = exc+'%';
     const max = Math.max(pct*1.4, 15);
     document.getElementById('b-max').textContent = max.toFixed(0)+'%';
-    // Texto de aviso sobre faixa etária
     const avisoFx = idoso
       ? '<br><em>⚠️ Atenção: se este reajuste inclui mudança de faixa etária (59+), parte do aumento pode ser justificada. A análise completa requer avaliação do seu contrato.</em>'
       : '';
@@ -815,11 +798,28 @@
     const msg = encodeURIComponent(`Olá Dra. Fernanda! Usei a calculadora no site e meu plano ${pl} (${tipo}) aplicou reajuste de ${pct.toFixed(2)}% em 2026, acima do limite da ANS (6,06%). Mensalidade foi de R$${va.toFixed(2)} para R$${vd.toFixed(2)}. Quero entender meus direitos.`);
     document.getElementById('link-whats').href = `https://wa.me/5511952766090?text=${msg}`;
     document.getElementById('ov-ab').classList.add('ativo');
+    salvarLead({ ..._leadBase,
+      tipo_contrato: tipo, plano: pl,
+      mensalidade_anterior: va, mensalidade_nova: vd,
+      percentual_reajuste: parseFloat(pct.toFixed(2)),
+      faixas_etarias: JSON.stringify(coletarFaixas()),
+      resultado: 'abusivo'
+    });
   }
 
   function abrirOk(pct, tipo) {
     document.getElementById('pct-ok').textContent = pct.toFixed(2)+'%';
     document.getElementById('ov-ok').classList.add('ativo');
+    const va = parseFloat(document.getElementById('antes').value);
+    const vd = parseFloat(document.getElementById('depois').value);
+    const pl = document.getElementById('plano').value;
+    salvarLead({ ..._leadBase,
+      tipo_contrato: tipo, plano: pl,
+      mensalidade_anterior: va, mensalidade_nova: vd,
+      percentual_reajuste: parseFloat(pct.toFixed(2)),
+      faixas_etarias: JSON.stringify(coletarFaixas()),
+      resultado: 'ok'
+    });
   }
 
   function abrirColetivo(pct, va, vd, pl, tipo, idoso) {
@@ -829,6 +829,12 @@
     const msg = encodeURIComponent(`Olá Dra. Fernanda! Meu plano ${pl} (${tipoLabel}) aplicou reajuste de ${pct.toFixed(2)}% em 2026. Mensalidade foi de R$${va.toFixed(2)} para R$${vd.toFixed(2)}. Quero verificar se há irregularidade.`);
     document.getElementById('link-whats-col').href = `https://wa.me/5511952766090?text=${msg}`;
     document.getElementById('ov-col').classList.add('ativo');
+    salvarLead({ ..._leadBase,
+      tipo_contrato: tipo, plano: pl,
+      mensalidade_anterior: va, mensalidade_nova: vd,
+      percentual_reajuste: parseFloat(pct.toFixed(2)),
+      resultado: 'coletivo'
+    });
   }
 
   function fechar() {
@@ -840,6 +846,56 @@
   document.querySelectorAll('.overlay').forEach(o=>{
     o.addEventListener('click', e=>{ if(e.target===o) fechar(); });
   });
+
+  // ── SUPABASE ──
+  const SUPA_URL = 'https://bumhjyhaqewcfwojlgwc.supabase.co';
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1bWhqeWhhcWV3Y2Z3b2psZ3djIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjkxNTksImV4cCI6MjA5MzUwNTE1OX0.2l7naJq1_sug0zkENLH3A4yyaiXKjGyEbFM4BbBPzFs';
+
+  async function salvarLead(dados) {
+    try {
+      await fetch(`${SUPA_URL}/rest/v1/leads_dra_fernanda`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPA_KEY,
+          'Authorization': `Bearer ${SUPA_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(dados)
+      });
+    } catch(e) {
+      console.warn('Erro ao salvar lead:', e);
+    }
+  }
+
+  // Dados da etapa 1 — guardados ao avançar
+  let _leadBase = {};
+
+  // Sobrescreve irEtapa2 para capturar dados
+  const _irEtapa2Original = irEtapa2;
+  function irEtapa2() {
+    const n = val('c-nome',     document.getElementById('nome').value.trim().length >= 2);
+    const e = val('c-email',    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('email').value));
+    const w = val('c-whats',    document.getElementById('whatsapp').value.replace(/\D/g,'').length >= 10);
+    const b = val('c-nasc',     document.getElementById('nascimento').value !== '');
+    const v = val('c-vigencia', document.getElementById('vigencia').value !== '');
+    if(!n||!e||!w||!b||!v) return;
+    _leadBase = {
+      nome:           document.getElementById('nome').value.trim(),
+      email:          document.getElementById('email').value.trim(),
+      whatsapp:       document.getElementById('whatsapp').value.trim(),
+      nascimento:     document.getElementById('nascimento').value,
+      vigencia_plano: document.getElementById('vigencia').value,
+    };
+    document.getElementById('t1').style.display='none';
+    document.getElementById('s1').style.display='block';
+    setTimeout(()=>{
+      document.getElementById('etapa1').style.display='none';
+      document.getElementById('etapa2').style.display='block';
+      document.getElementById('t1').style.display='inline';
+      document.getElementById('s1').style.display='none';
+    }, 700);
+  }
 </script>
 <!-- POPUP COLETIVO -->
 <div class="overlay" id="ov-col">
