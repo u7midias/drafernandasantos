@@ -392,14 +392,14 @@
 <!-- HERO -->
 <div class="hero">
   <div class="tag-alerta">⚠️ Reajuste 2026 dos planos de saúde</div>
-  <h1>Seu plano de saúde cobrou mais do que o <em>contrato permite?</em></h1>
+  <h1>O reajuste do seu plano de saúde <em>(PME)</em> foi acima do esperado?</h1>
   <p>Verifique se o reajuste da sua mensalidade em 2026 tem irregularidades — e descubra se você tem direito à revisão judicial dos valores cobrados.</p>
   <div class="badge-ans">
-    <span>Plano individual/familiar</span>
+    <span>Reajuste ANS</span>
     <div class="badge-divider"></div>
     <strong>6,06%</strong>
     <div class="badge-divider"></div>
-    <span>Teto ANS 2026</span>
+    <span>Teto 2025/2026</span>
   </div>
 </div>
 
@@ -432,6 +432,19 @@
           <input type="date" id="nascimento" max="" />
           <span class="err">Informe sua data de nascimento</span>
         </div>
+        <div class="campo full" id="c-vigencia">
+          <label>Ano de início de vigência do plano</label>
+          <div class="select-wrap">
+            <select id="vigencia">
+              <option value="">Selecione o ano</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+            </select>
+          </div>
+          <span class="err">Selecione o ano de início do plano</span>
+        </div>
       </div>
       <button class="btn-cta" onclick="irEtapa2()">
         <span id="t1">Quero calcular meu reajuste</span>
@@ -446,7 +459,7 @@
       <p class="form-sub">Compare o valor antes e depois do reajuste aplicado em 2026.</p>
       <div class="info-calculo">
         <strong>Como encontrar essas informações?</strong><br>
-        Verifique o boleto de <strong>dezembro de 2025</strong> (valor antigo) e o de <strong>janeiro ou fevereiro de 2026</strong> (novo valor). O tipo de contratação consta na carteirinha ou contrato do plano.
+        Verifique o valor do seu boleto anterior ao reajuste e o atual reajustado. O tipo de contratação consta na carteirinha ou contrato do plano.
       </div>
       <div class="grid2">
         <div class="campo full" id="c-tipo">
@@ -454,10 +467,8 @@
           <div class="select-wrap">
             <select id="tipo" onchange="onTipoChange(this.value)">
               <option value="">Selecione o tipo</option>
-              <option value="individual">Individual / Familiar (contrato direto com a operadora)</option>
-              <option value="coletivo_empresarial">Coletivo Empresarial (pelo empregador)</option>
-              <option value="coletivo_adesao">Coletivo por Adesão (sindicato, associação)</option>
-              <option value="nao_sei">Não sei informar</option>
+              <option value="individual">Plano Individual (CPF)</option>
+              <option value="coletivo_empresarial">Coletivo Empresarial (CNPJ — apenas com familiares)</option>
             </select>
           </div>
           <span class="err">Selecione o tipo de contratação</span>
@@ -517,11 +528,8 @@
               <option>Porto Seguro Saúde</option>
               <option>SulAmérica</option>
               <option>Unimed</option>
-              <option>Notre Dame Intermédica</option>
-              <option>Hapvida</option>
-              <option>Prevent Senior</option>
-              <option>São Cristóvão Saúde</option>
-              <option>Outro</option>
+              <option>Notre Dame Intermédica / Hapvida</option>
+              <option>Central Nacional Unimed</option>
             </select>
           </div>
           <span class="err">Selecione seu plano</span>
@@ -563,7 +571,7 @@
 <div class="stats-section">
   <h2>Resultados reais para pacientes em todo o Brasil</h2>
   <div class="stats-grid">
-    <div class="stat"><strong>+500</strong><span>processos em direito à saúde</span></div>
+    <div class="stat"><strong>+1000</strong><span>processos em direito à saúde</span></div>
     <div class="stat"><strong>100%</strong><span>foco exclusivo em saúde</span></div>
     <div class="stat"><strong class="emoji-stat">🤝</strong><span>atendimento humanizado</span></div>
   </div>
@@ -582,7 +590,7 @@
 <div class="overlay" id="ov-ab">
   <div class="popup popup-ab">
     <div class="icone-ab">🚨</div>
-    <h2>Reajuste Abusivo Identificado!</h2>
+    <h2>Reajuste acima da ANS identificado</h2>
     <div class="pct-big" id="pct-ab">0%</div>
     <div class="pct-label">de reajuste aplicado pelo seu plano em 2026</div>
 
@@ -615,7 +623,7 @@
 <div class="overlay" id="ov-ok">
   <div class="popup popup-ok">
     <div class="icone-ok">✅</div>
-    <h2>Dentro do Limite da ANS</h2>
+    <h2>Reajuste dentro do limite da ANS</h2>
     <div class="pct-big-ok" id="pct-ok">0%</div>
     <div class="pct-label">de reajuste aplicado pelo seu plano em 2026</div>
 
@@ -730,7 +738,7 @@
     const secFaixa   = document.getElementById('c-faixa');
     const secAviso   = document.getElementById('aviso-coletivo-form');
     const isIndividual = tipo === 'individual';
-    const isColetivo   = tipo === 'coletivo_empresarial' || tipo === 'coletivo_adesao' || tipo === 'nao_sei';
+    const isColetivo   = tipo === 'coletivo_empresarial';
     secFaixa.style.display  = isIndividual ? 'flex' : 'none';
     secAviso.style.display  = isColetivo   ? 'block' : 'none';
     // Limpa dependentes ao trocar tipo
@@ -743,11 +751,12 @@
   document.getElementById('nascimento').max = new Date().toISOString().split('T')[0];
 
   function irEtapa2() {
-    const n = val('c-nome',  document.getElementById('nome').value.trim().length >= 2);
-    const e = val('c-email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('email').value));
-    const w = val('c-whats', document.getElementById('whatsapp').value.replace(/\D/g,'').length >= 10);
-    const b = val('c-nasc',  document.getElementById('nascimento').value !== '');
-    if(!n||!e||!w||!b) return;
+    const n = val('c-nome',     document.getElementById('nome').value.trim().length >= 2);
+    const e = val('c-email',    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('email').value));
+    const w = val('c-whats',    document.getElementById('whatsapp').value.replace(/\D/g,'').length >= 10);
+    const b = val('c-nasc',     document.getElementById('nascimento').value !== '');
+    const v = val('c-vigencia', document.getElementById('vigencia').value !== '');
+    if(!n||!e||!w||!b||!v) return;
     document.getElementById('t1').style.display='none';
     document.getElementById('s1').style.display='block';
     setTimeout(()=>{
@@ -815,9 +824,7 @@
 
   function abrirColetivo(pct, va, vd, pl, tipo, idoso) {
     document.getElementById('pct-col').textContent = pct.toFixed(2)+'%';
-    const tipoLabel = tipo === 'coletivo_empresarial' ? 'Coletivo Empresarial' :
-                      tipo === 'coletivo_adesao'       ? 'Coletivo por Adesão'  :
-                                                         'Tipo não identificado';
+    const tipoLabel = 'Coletivo Empresarial (CNPJ — apenas com familiares)';
     document.getElementById('tipo-col-label').textContent = tipoLabel;
     const msg = encodeURIComponent(`Olá Dra. Fernanda! Meu plano ${pl} (${tipoLabel}) aplicou reajuste de ${pct.toFixed(2)}% em 2026. Mensalidade foi de R$${va.toFixed(2)} para R$${vd.toFixed(2)}. Quero verificar se há irregularidade.`);
     document.getElementById('link-whats-col').href = `https://wa.me/5511952766090?text=${msg}`;
