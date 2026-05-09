@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Admin | Dra. Fernanda Santos</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --borde:    #4A1020;
+  --dourado:  #B8922A;
+  --bg:       #f8f4f5;
+  --surface:  #ffffff;
+  --border:   #e8dde0;
+  --text:     #2d1a20;
+  --muted:    #8a6b72;
+  --green:    #1a7a4a;
+  --green-bg: #e8f5ee;
+  --red:      #b91c1c;
+  --red-bg:   #fef2f2;
+  --blue:     #1d4ed8;
+  --blue-bg:  #eff6ff;
+  --radius:   10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* LOGIN */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--borde);}
+.login-box{background:#fff;border-radius:16px;padding:40px 36px;width:100%;max-width:360px;}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-mono{width:56px;height:56px;background:var(--borde);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;margin:0 auto 12px;font-family:'Georgia',serif;}
+.login-logo h2{font-size:18px;font-weight:700;color:var(--borde);}
+.login-logo p{font-size:13px;color:var(--muted);margin-top:4px;}
+.field{margin-bottom:14px;}
+.field label{font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px;letter-spacing:.05em;text-transform:uppercase;}
+.field input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:border .2s;}
+.field input:focus{border-color:var(--borde);}
+.btn-login{width:100%;background:var(--borde);color:#fff;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;margin-top:6px;transition:opacity .2s;}
+.btn-login:hover{opacity:.88;}
+.login-err{font-size:13px;color:var(--red);text-align:center;margin-top:10px;display:none;}
+
+/* ADMIN */
+#admin-screen{display:none;}
+.nav{background:var(--borde);padding:0 32px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:10px;color:#fff;font-size:15px;font-weight:700;}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--dourado);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-badge{background:rgba(184,146,42,.2);color:var(--dourado);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid rgba(184,146,42,.3);}
+.btn-logout{background:transparent;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;}
+.btn-logout:hover{border-color:rgba(255,255,255,.6);color:#fff;}
+
+.body{max-width:1140px;margin:0 auto;padding:28px 24px;}
+
+/* CARDS */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.card{background:var(--surface);border-radius:var(--radius);padding:20px 22px;border:1px solid var(--border);}
+.card-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.card-val{font-size:30px;font-weight:700;color:var(--text);line-height:1;}
+.card-val.green{color:var(--green);}
+.card-val.red{color:var(--red);}
+.card-val.gold{color:var(--dourado);}
+.card-sub{font-size:12px;color:var(--muted);margin-top:5px;}
+
+/* FILTROS */
+.filtros{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px 20px;margin-bottom:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.filtros input,.filtros select{border:1.5px solid var(--border);border-radius:7px;padding:8px 12px;font-size:13px;font-family:'Inter',sans-serif;color:var(--text);background:var(--bg);outline:none;transition:border .2s;}
+.filtros input:focus,.filtros select:focus{border-color:var(--borde);}
+.filtros input{width:220px;}
+.btn-refresh,.btn-export{border-radius:7px;padding:8px 16px;font-size:13px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;}
+.btn-refresh{background:transparent;border:1.5px solid var(--border);color:var(--muted);}
+.btn-refresh:hover{border-color:var(--borde);color:var(--borde);}
+.btn-export{background:var(--borde);border:none;color:#fff;}
+.btn-export:hover{opacity:.88;}
+.filtros-right{margin-left:auto;display:flex;gap:8px;}
+
+/* TABELA */
+.table-wrap{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;}
+.table-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.table-title{font-size:15px;font-weight:700;}
+.table-count{font-size:13px;color:var(--muted);}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--bg);}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);}
+td{padding:12px 14px;font-size:13px;border-bottom:1px solid var(--border);color:var(--text);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg);}
+.td-muted{color:var(--muted);font-size:12px;}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;}
+.pill-abusivo{background:var(--red-bg);color:var(--red);}
+.pill-ok{background:var(--green-bg);color:var(--green);}
+.pill-coletivo{background:var(--blue-bg);color:var(--blue);}
+.pill-individual{background:#fef3c7;color:#92400e;}
+.pill-coletivo-tipo{background:#ede9fe;color:#5b21b6;}
+
+/* VAZIO / LOAD */
+.estado{text-align:center;padding:60px 20px;color:var(--muted);font-size:14px;}
+.spinner-tab{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--borde);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ANIVERSÁRIOS */
+.aniv-section{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:20px;margin-top:18px;}
+.aniv-title{font-size:15px;font-weight:700;margin-bottom:4px;}
+.aniv-sub{font-size:13px;color:var(--muted);margin-bottom:16px;}
+.aniv-list{display:flex;flex-direction:column;gap:8px;}
+.aniv-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg);border-radius:8px;border:1px solid var(--border);}
+.aniv-emoji{font-size:22px;flex-shrink:0;}
+.aniv-info{flex:1;}
+.aniv-nome{font-size:14px;font-weight:600;}
+.aniv-data{font-size:12px;color:var(--muted);}
+.aniv-btn{background:var(--borde);color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:12px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;text-decoration:none;display:inline-block;}
+
+@media(max-width:900px){.cards{grid-template-columns:1fr 1fr;}.nav{padding:0 16px;}.body{padding:16px;}}
+@media(max-width:560px){.cards{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-mono">FA</div>
+      <h2>Painel Admin</h2>
+      <p>Dra. Fernanda Santos Advocacia</p>
+    </div>
+    <div class="field">
+      <label>Senha</label>
+      <input type="password" id="senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()" />
+    </div>
+    <button class="btn-login" onclick="login()">Entrar</button>
+    <p class="login-err" id="login-err">Senha incorreta</p>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin-screen">
+  <nav class="nav">
+    <div class="nav-logo">
+      <div class="nav-dot"></div>
+      Dra. Fernanda Santos — Leads
+    </div>
+    <div class="nav-right">
+      <span class="nav-badge">Admin</span>
+      <button class="btn-logout" onclick="logout()">Sair</button>
+    </div>
+  </nav>
+
+  <div class="body">
+
+    <!-- CARDS -->
+    <div class="cards">
+      <div class="card">
+        <div class="card-label">Total de leads</div>
+        <div class="card-val" id="c-total">—</div>
+        <div class="card-sub">cadastros realizados</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Reajuste acima ANS</div>
+        <div class="card-val red" id="c-abusivo">—</div>
+        <div class="card-sub">resultado "abusivo"</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Dentro do limite</div>
+        <div class="card-val green" id="c-ok">—</div>
+        <div class="card-sub">resultado "ok"</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Planos coletivos</div>
+        <div class="card-val gold" id="c-coletivo">—</div>
+        <div class="card-sub">coletivo empresarial</div>
+      </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="filtros">
+      <input type="text" id="busca" placeholder="Buscar por nome, e-mail ou plano..." oninput="filtrar()" />
+      <select id="f-resultado" onchange="filtrar()">
+        <option value="">Todos os resultados</option>
+        <option value="abusivo">Acima da ANS</option>
+        <option value="ok">Dentro do limite</option>
+        <option value="coletivo">Coletivo</option>
+      </select>
+      <select id="f-plano" onchange="filtrar()">
+        <option value="">Todos os planos</option>
+        <option>Amil</option>
+        <option>Bradesco Saúde</option>
+        <option>Porto Seguro Saúde</option>
+        <option>SulAmérica</option>
+        <option>Unimed</option>
+        <option>Notre Dame Intermédica / Hapvida</option>
+        <option>Central Nacional Unimed</option>
+      </select>
+      <div class="filtros-right">
+        <button class="btn-refresh" onclick="carregar()">↻ Atualizar</button>
+        <button class="btn-export" onclick="exportarCSV()">⬇ Exportar CSV</button>
+      </div>
+    </div>
+
+    <!-- TABELA -->
+    <div class="table-wrap">
+      <div class="table-header">
+        <span class="table-title">Leads cadastrados</span>
+        <span class="table-count" id="table-count"></span>
+      </div>
+      <div id="table-body">
+        <div class="estado"><div class="spinner-tab"></div>Carregando leads...</div>
+      </div>
+    </div>
+
+    <!-- ANIVERSÁRIOS DO MÊS -->
+    <div class="aniv-section">
+      <div class="aniv-title">🎂 Aniversários este mês</div>
+      <div class="aniv-sub">Leads que fazem aniversário em <span id="mes-nome"></span> — ótimo momento para reativar contato.</div>
+      <div class="aniv-list" id="aniv-list">
+        <div class="estado" style="padding:20px">Carregando...</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SUPA_URL = 'https://bumhjyhaqewcfwojlgwc.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1bWhqeWhhcWV3Y2Z3b2psZ3djIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjkxNTksImV4cCI6MjA5MzUwNTE1OX0.2l7naJq1_sug0zkENLH3A4yyaiXKjGyEbFM4BbBPzFs';
+const SENHA   = 'fernanda2026';
+
+let todosLeads = [];
+
+// ── AUTH ──
+function login() {
+  if (document.getElementById('senha').value === SENHA) {
+    localStorage.setItem('admin_fa','ok');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    carregar();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+  }
+}
+function logout() {
+  localStorage.removeItem('admin_fa');
+  location.reload();
+}
+if (localStorage.getItem('admin_fa') === 'ok') {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-screen').style.display = 'block';
+  carregar();
+}
+
+// ── CARREGAR LEADS ──
+async function carregar() {
+  document.getElementById('table-body').innerHTML = '<div class="estado"><div class="spinner-tab"></div>Carregando leads...</div>';
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/leads_dra_fernanda?order=criado_em.desc&limit=500`, {
+      headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` }
+    });
+    todosLeads = await res.json();
+    atualizarCards();
+    filtrar();
+    renderAniversarios();
+  } catch(e) {
+    document.getElementById('table-body').innerHTML = '<div class="estado">Erro ao carregar leads. Verifique a conexão.</div>';
+  }
+}
+
+// ── CARDS RESUMO ──
+function atualizarCards() {
+  document.getElementById('c-total').textContent    = todosLeads.length;
+  document.getElementById('c-abusivo').textContent  = todosLeads.filter(l=>l.resultado==='abusivo').length;
+  document.getElementById('c-ok').textContent       = todosLeads.filter(l=>l.resultado==='ok').length;
+  document.getElementById('c-coletivo').textContent = todosLeads.filter(l=>l.resultado==='coletivo').length;
+}
+
+// ── FILTRAR ──
+function filtrar() {
+  const busca     = document.getElementById('busca').value.toLowerCase();
+  const resultado = document.getElementById('f-resultado').value;
+  const plano     = document.getElementById('f-plano').value;
+  const filtrados = todosLeads.filter(l => {
+    const matchBusca = !busca || [l.nome,l.email,l.plano,l.whatsapp].some(v=>(v||'').toLowerCase().includes(busca));
+    const matchRes   = !resultado || l.resultado === resultado;
+    const matchPlano = !plano || (l.plano||'') === plano;
+    return matchBusca && matchRes && matchPlano;
+  });
+  renderTabela(filtrados);
+  document.getElementById('table-count').textContent = `${filtrados.length} lead${filtrados.length!==1?'s':''}`;
+}
+
+// ── TABELA ──
+function renderTabela(leads) {
+  if (!leads.length) {
+    document.getElementById('table-body').innerHTML = '<div class="estado">Nenhum lead encontrado.</div>';
+    return;
+  }
+  const rows = leads.map(l => {
+    const dt = new Date(l.criado_em).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const pillRes = l.resultado === 'abusivo'  ? `<span class="pill pill-abusivo">Acima ANS</span>`
+                  : l.resultado === 'ok'        ? `<span class="pill pill-ok">Dentro limite</span>`
+                  : l.resultado === 'coletivo'  ? `<span class="pill pill-coletivo">Coletivo</span>`
+                  : '—';
+    const pillTipo = l.tipo_contrato === 'individual'
+      ? `<span class="pill pill-individual">Individual</span>`
+      : `<span class="pill pill-coletivo-tipo">Coletivo</span>`;
+    const pct = l.percentual_reajuste != null ? `${parseFloat(l.percentual_reajuste).toFixed(2)}%` : '—';
+    const wLink = `https://wa.me/55${(l.whatsapp||'').replace(/\D/g,'')}`;
+    return `<tr>
+      <td><strong>${l.nome||'—'}</strong><br><span class="td-muted">${l.email||''}</span></td>
+      <td><a href="${wLink}" target="_blank" style="color:var(--borde);text-decoration:none">${l.whatsapp||'—'}</a></td>
+      <td>${l.plano||'—'}</td>
+      <td>${pillTipo}</td>
+      <td>${pct}</td>
+      <td>${pillRes}</td>
+      <td>${l.vigencia_plano||'—'}</td>
+      <td class="td-muted">${dt}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('table-body').innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Nome / E-mail</th>
+        <th>WhatsApp</th>
+        <th>Plano</th>
+        <th>Tipo</th>
+        <th>Reajuste</th>
+        <th>Resultado</th>
+        <th>Vigência</th>
+        <th>Data</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ── ANIVERSÁRIOS ──
+function renderAniversarios() {
+  const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const agora = new Date();
+  const mesAtual = agora.getMonth() + 1;
+  document.getElementById('mes-nome').textContent = meses[mesAtual - 1];
+
+  const aniversariantes = todosLeads.filter(l => {
+    if (!l.nascimento) return false;
+    const mes = parseInt(l.nascimento.split('-')[1]);
+    return mes === mesAtual;
+  }).sort((a,b) => parseInt(a.nascimento.split('-')[2]) - parseInt(b.nascimento.split('-')[2]));
+
+  if (!aniversariantes.length) {
+    document.getElementById('aniv-list').innerHTML = '<div class="estado" style="padding:16px">Nenhum aniversariante este mês.</div>';
+    return;
+  }
+
+  document.getElementById('aniv-list').innerHTML = aniversariantes.map(l => {
+    const dia = l.nascimento.split('-')[2];
+    const wMsg = encodeURIComponent(`Olá ${l.nome}! Feliz aniversário! 🎂 Aproveite esta data especial para verificar se o seu plano de saúde está cumprindo tudo o que promete. A Dra. Fernanda pode avaliar seu caso gratuitamente.`);
+    const wLink = `https://wa.me/55${(l.whatsapp||'').replace(/\D/g,'')}?text=${wMsg}`;
+    return `<div class="aniv-item">
+      <div class="aniv-emoji">🎂</div>
+      <div class="aniv-info">
+        <div class="aniv-nome">${l.nome}</div>
+        <div class="aniv-data">Dia ${dia} · ${l.email} · ${l.whatsapp}</div>
+      </div>
+      <a class="aniv-btn" href="${wLink}" target="_blank">Enviar mensagem</a>
+    </div>`;
+  }).join('');
+}
+
+// ── EXPORTAR CSV ──
+function exportarCSV() {
+  const headers = ['Nome','Email','WhatsApp','Nascimento','Vigência','Tipo','Plano','Mensalidade Anterior','Mensalidade Nova','Reajuste %','Resultado','Data Cadastro'];
+  const rows = todosLeads.map(l => [
+    l.nome, l.email, l.whatsapp, l.nascimento, l.vigencia_plano,
+    l.tipo_contrato, l.plano, l.mensalidade_anterior, l.mensalidade_nova,
+    l.percentual_reajuste, l.resultado,
+    new Date(l.criado_em).toLocaleDateString('pt-BR')
+  ].map(v => `"${(v||'').toString().replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv);
+  a.download = `leads-dra-fernanda-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+</script>
+</body>
+</html>
