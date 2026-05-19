@@ -845,7 +845,6 @@
   function abrirColetivo(pct, va, vd, pl, tipo, idoso) {
     document.getElementById('pct-col').textContent = pct.toFixed(2)+'%';
     const tipoLabel = 'Coletivo Empresarial (CNPJ — apenas com familiares)';
-    document.getElementById('tipo-col-label').textContent = tipoLabel;
     const msg = encodeURIComponent(`Olá Dra. Fernanda! Meu plano ${pl} (${tipoLabel}) aplicou reajuste de ${pct.toFixed(2)}% em 2026. Mensalidade foi de R$${va.toFixed(2)} para R$${vd.toFixed(2)}. Quero verificar se há irregularidade.`);
     document.getElementById('link-whats-col').href = `https://wa.me/5511952766090?text=${msg}`;
     document.getElementById('ov-col').classList.add('ativo');
@@ -926,16 +925,26 @@
     <div class="pct-label">de reajuste aplicado pelo seu plano em 2026</div>
 
     <div class="alerta-coletivo">
-      📋 <strong>Atenção:</strong> O limite de 6,06% da ANS se aplica apenas a <strong>planos individuais/familiares</strong>. Planos <strong id="tipo-col-label">coletivos</strong> têm reajuste negociado entre a operadora e a empresa/entidade contratante — sem teto regulatório fixo pela ANS para 2026.
+      📋 <strong>Atenção:</strong> O limite de 6,06% da ANS se aplica apenas a <strong>planos individuais/familiares</strong>. Contudo, também poderá ser aplicado aos <strong>Planos Coletivo Empresarial (CNPJ — apenas com familiares)</strong> que consigam este direito através da <strong>Ação Revisional de Reajuste</strong>.
     </div>
 
-    <p class="pop-txt" style="text-align:left">Mesmo assim, o reajuste do seu plano coletivo pode ser contestado se houver:</p>
-    <ul style="text-align:left; font-size:13px; color:var(--cinza-texto); line-height:2; margin:0 0 20px 20px;">
-      <li>Reajuste não previsto ou sem justificativa no contrato</li>
-      <li>Aplicação irregular de faixa etária</li>
-      <li>Reajuste abusivo em razão de sinistralidade sem comprovação</li>
-      <li>Cobranças indevidas ou negativas de cobertura</li>
+    <p class="pop-txt" style="text-align:left; font-weight:600; color:var(--borde-escuro);">Como saber se posso contestar os reajustes do meu plano?</p>
+    <ul style="text-align:left; font-size:13px; color:var(--cinza-texto); line-height:2; margin:0 0 16px 20px;">
+      <li>O plano de saúde vigente;</li>
+      <li>O plano de saúde deverá ter somente familiares e/ou sócios;</li>
+      <li>O plano tem que ter sido contratado após 1998;</li>
+      <li>O reajuste ter sido superior ao índice da ANS, sem justificativa ou detalhamento.</li>
     </ul>
+
+    <p class="pop-txt" style="text-align:left; font-weight:600; color:var(--borde-escuro);">Eu preencho esses requisitos, quais são meus direitos?</p>
+    <ul style="text-align:left; font-size:13px; color:var(--cinza-texto); line-height:2; margin:0 0 16px 20px;">
+      <li>Poderá buscar uma revisão de seus reajustes junto à Justiça;</li>
+      <li>Ter valores a restituir de reajustes abusivos dos últimos 3 anos;</li>
+      <li>Garantir que seu plano seja reajustado "para sempre" no índice da ANS.</li>
+    </ul>
+
+    <p class="pop-txt" style="text-align:left; font-weight:600; color:var(--borde-escuro);">O que faço agora?</p>
+    <p style="text-align:left; font-size:13px; color:var(--cinza-texto); line-height:1.7; margin:0 0 20px 0;">Consulte um advogado especialista em saúde e faça sua análise de viabilidade para a ação.</p>
 
     <a class="btn-whats" id="link-whats-col" href="#" target="_blank">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.998-1.426A9.96 9.96 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.96 7.96 0 01-4.099-1.133l-.291-.174-3.007.859.866-2.941-.19-.302A7.96 7.96 0 014 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg>
