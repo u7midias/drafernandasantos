@@ -399,7 +399,7 @@
   <div class="badge-ans">
     <span>Reajuste ANS</span>
     <div class="badge-divider"></div>
-    <strong>6,06%</strong>
+    <strong>5,11%</strong>
     <div class="badge-divider"></div>
     <span>Teto 2025/2026</span>
   </div>
@@ -579,7 +579,7 @@
     <div class="passo">
       <div class="passo-num">2</div>
       <h4>Resultado imediato</h4>
-      <p>A calculadora verifica o tipo de plano e compara com o limite de 6,06% da ANS (válido para planos individuais/familiares de 2026).</p>
+      <p>A calculadora verifica o tipo de plano e compara com o limite de 5,11% da ANS (válido para planos individuais/familiares de 2026).</p>
     </div>
     <div class="passo">
       <div class="passo-num">3</div>
@@ -603,7 +603,7 @@
 <footer>
   <p style="color:rgba(255,255,255,0.7); font-weight:500; margin-bottom:4px">Fernanda A. Santos Advocacia</p>
   <p>(11) 95276-6090 &nbsp;·&nbsp; <a href="https://wa.me/5511952766090">WhatsApp</a> &nbsp;·&nbsp; <a href="https://fernandasantosadvocacia.com.br" target="_blank">fernandasantosadvocacia.com.br</a></p>
-  <p style="margin-top:10px; font-size:11px">Esta calculadora tem finalidade informativa e não constitui consulta jurídica. O índice de 6,06% refere-se ao reajuste anual regulado pela ANS para planos individuais/familiares em 2026. Planos coletivos possuem regras distintas. Reajustes por faixa etária são regulados separadamente. Para análise completa do seu caso, consulte a Dra. Fernanda.</p>
+  <p style="margin-top:10px; font-size:11px">Esta calculadora tem finalidade informativa e não constitui consulta jurídica. O índice de 5,11% refere-se ao reajuste anual regulado pela ANS para planos individuais/familiares em 2026. Planos coletivos possuem regras distintas. Reajustes por faixa etária são regulados separadamente. Para análise completa do seu caso, consulte a Dra. Fernanda.</p>
   <p style="margin-top:4px; font-size:11px">© 2026 Fernanda Almeida dos Santos Advocacia. Todos os direitos reservados.</p>
 </footer>
 
@@ -622,12 +622,12 @@
     </div>
     <div class="barra-leg">
       <span>0%</span>
-      <span class="l-ans">Limite ANS: 6,06%</span>
+      <span class="l-ans">Limite ANS: 5,11%</span>
       <span id="b-max">15%</span>
     </div>
 
     <div class="caixa-exc">
-      ⚠️ O limite da ANS para reajuste anual de planos <strong>individuais/familiares</strong> em 2026 é <strong>6,06%</strong>. Seu plano aplicou <strong id="excesso">0%</strong> acima desse teto.
+      ⚠️ O limite da ANS para reajuste anual de planos <strong>individuais/familiares</strong> em 2026 é <strong>5,11%</strong>. Seu plano aplicou <strong id="excesso">0%</strong> acima desse teto.
     </div>
     <div id="aviso-faixa" style="font-size:12px; color:#7a5800; margin-bottom:10px; font-style:italic;"></div>
 
@@ -653,7 +653,7 @@
       📌 <strong>Atenção:</strong> mesmo dentro do limite de reajuste, seu plano pode ter outras irregularidades — cobranças indevidas, negativas de cobertura ou coparticipação abusiva.
     </div>
 
-    <p class="pop-txt">Seu reajuste de 2026 está dentro dos <strong>6,06%</strong> permitidos pela ANS para planos individuais/familiares. Porém, <strong>outros fatores</strong> podem tornar o reajuste contestável — como mudança de faixa etária simultânea, cobranças indevidas ou negativas de cobertura.</p>
+    <p class="pop-txt">Seu reajuste de 2026 está dentro dos <strong>5,11%</strong> permitidos pela ANS para planos individuais/familiares. Porém, <strong>outros fatores</strong> podem tornar o reajuste contestável — como mudança de faixa etária simultânea, cobranças indevidas ou negativas de cobertura.</p>
 
     <button class="btn-ok-fecha" onclick="fechar()">Entendido, obrigado!</button>
     <a class="btn-whats" href="https://wa.me/5511952766090?text=Ol%C3%A1%20Dra.%20Fernanda%2C%20usei%20a%20calculadora%20de%20reajuste%20e%20meu%20reajuste%20está%20dentro%20do%20limite%2C%20mas%20gostaria%20de%20verificar%20se%20meu%20plano%20tem%20outras%20irregularidades." target="_blank">
@@ -796,7 +796,7 @@
       const todasFaixas = coletarFaixas();
       const temIdoso = todasFaixas.includes('59+');
       if (isIndividual) {
-        pct > 6.06 ? abrirAbusivo(pct, va, vd, pl, tipo, temIdoso) : abrirOk(pct, tipo);
+        pct > 5.11 ? abrirAbusivo(pct, va, vd, pl, tipo, temIdoso) : abrirOk(pct, tipo);
       } else {
         abrirColetivo(pct, va, vd, pl, tipo, temIdoso);
       }
@@ -804,7 +804,7 @@
   }
 
   function abrirAbusivo(pct, va, vd, pl, tipo, idoso) {
-    const exc = (pct-6.06).toFixed(2);
+    const exc = (pct-5.11).toFixed(2);
     document.getElementById('pct-ab').textContent = pct.toFixed(2)+'%';
     document.getElementById('excesso').textContent = exc+'%';
     const max = Math.max(pct*1.4, 15);
@@ -814,10 +814,10 @@
       : '';
     document.getElementById('aviso-faixa').innerHTML = avisoFx;
     setTimeout(()=>{
-      document.getElementById('b-ans').style.width  = (6.06/max*100)+'%';
+      document.getElementById('b-ans').style.width  = (5.11/max*100)+'%';
       document.getElementById('b-real').style.width = (pct/max*100)+'%';
     }, 200);
-    const msg = encodeURIComponent(`Olá Dra. Fernanda! Usei a calculadora no site e meu plano ${pl} (${tipo}) aplicou reajuste de ${pct.toFixed(2)}% em 2026, acima do limite da ANS (6,06%). Mensalidade foi de R$${va.toFixed(2)} para R$${vd.toFixed(2)}. Quero entender meus direitos.`);
+    const msg = encodeURIComponent(`Olá Dra. Fernanda! Usei a calculadora no site e meu plano ${pl} (${tipo}) aplicou reajuste de ${pct.toFixed(2)}% em 2026, acima do limite da ANS (5,11%). Mensalidade foi de R$${va.toFixed(2)} para R$${vd.toFixed(2)}. Quero entender meus direitos.`);
     document.getElementById('link-whats').href = `https://wa.me/5511952766090?text=${msg}`;
     document.getElementById('ov-ab').classList.add('ativo');
     salvarLead({ ..._leadBase,
@@ -927,7 +927,7 @@
     <div class="pct-label">de reajuste aplicado pelo seu plano em 2026</div>
 
     <div class="alerta-coletivo">
-      📋 <strong>Atenção:</strong> O limite de 6,06% da ANS se aplica apenas a <strong>planos individuais/familiares</strong>. Contudo, também poderá ser aplicado aos <strong>Planos Coletivo Empresarial (CNPJ — apenas com familiares)</strong> que consigam este direito através da <strong>Ação Revisional de Reajuste</strong>.
+      📋 <strong>Atenção:</strong> O limite de 5,11% da ANS se aplica apenas a <strong>planos individuais/familiares</strong>. Contudo, também poderá ser aplicado aos <strong>Planos Coletivo Empresarial (CNPJ — apenas com familiares)</strong> que consigam este direito através da <strong>Ação Revisional de Reajuste</strong>.
     </div>
 
     <p class="pop-txt" style="text-align:left; font-weight:600; color:var(--borde-escuro);">Como saber se posso contestar os reajustes do meu plano?</p>
