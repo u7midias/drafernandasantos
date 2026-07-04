@@ -125,11 +125,15 @@ tr:hover td{background:var(--bg);}
       <p>Dra. Fernanda Santos Advocacia</p>
     </div>
     <div class="field">
+      <label>E-mail</label>
+      <input type="email" id="email-login" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')login()" />
+    </div>
+    <div class="field">
       <label>Senha</label>
       <input type="password" id="senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()" />
     </div>
-    <button class="btn-login" onclick="login()">Entrar</button>
-    <p class="login-err" id="login-err">Senha incorreta</p>
+    <button class="btn-login" id="btn-login" onclick="login()">Entrar</button>
+    <p class="login-err" id="login-err">E-mail ou senha incorretos</p>
   </div>
 </div>
 
@@ -220,48 +224,69 @@ tr:hover td{background:var(--bg);}
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 const SUPA_URL = 'https://bumhjyhaqewcfwojlgwc.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1bWhqeWhhcWV3Y2Z3b2psZ3djIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjkxNTksImV4cCI6MjA5MzUwNTE1OX0.2l7naJq1_sug0zkENLH3A4yyaiXKjGyEbFM4BbBPzFs';
-const SENHA   = 'fernanda2026';
+
+// Cliente oficial do Supabase — cuida sozinho de sessão, refresh de token, etc.
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
 let todosLeads = [];
 
-// ── AUTH ──
-function login() {
-  if (document.getElementById('senha').value === SENHA) {
-    localStorage.setItem('admin_fa','ok');
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('admin-screen').style.display = 'block';
-    carregar();
-  } else {
+// ── AUTH (login real via Supabase Auth, não mais senha fixa no JS) ──
+async function login() {
+  const email = document.getElementById('email-login').value.trim();
+  const senha = document.getElementById('senha').value;
+  const btn = document.getElementById('btn-login');
+  btn.disabled = true; btn.textContent = 'Entrando...';
+
+  const { error } = await sb.auth.signInWithPassword({ email, password: senha });
+
+  btn.disabled = false; btn.textContent = 'Entrar';
+
+  if (error) {
     document.getElementById('login-err').style.display = 'block';
+    return;
   }
-}
-function logout() {
-  localStorage.removeItem('admin_fa');
-  location.reload();
-}
-if (localStorage.getItem('admin_fa') === 'ok') {
+  document.getElementById('login-err').style.display = 'none';
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('admin-screen').style.display = 'block';
   carregar();
 }
 
-// ── CARREGAR LEADS ──
+async function logout() {
+  await sb.auth.signOut();
+  location.reload();
+}
+
+// Ao carregar a página, verifica se já existe uma sessão válida (Supabase cuida da expiração/refresh)
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    carregar();
+  }
+})();
+
+// ── CARREGAR LEADS (usa o cliente autenticado — só funciona com sessão válida) ──
 async function carregar() {
   document.getElementById('table-body').innerHTML = '<div class="estado"><div class="spinner-tab"></div>Carregando leads...</div>';
-  try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/leads_dra_fernanda?order=criado_em.desc&limit=500`, {
-      headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` }
-    });
-    todosLeads = await res.json();
-    atualizarCards();
-    filtrar();
-    renderAniversarios();
-  } catch(e) {
-    document.getElementById('table-body').innerHTML = '<div class="estado">Erro ao carregar leads. Verifique a conexão.</div>';
+  const { data, error } = await sb
+    .from('leads_dra_fernanda')
+    .select('*')
+    .order('criado_em', { ascending: false })
+    .limit(500);
+
+  if (error) {
+    document.getElementById('table-body').innerHTML = '<div class="estado">Erro ao carregar leads: ' + error.message + '</div>';
+    return;
   }
+  todosLeads = data || [];
+  atualizarCards();
+  filtrar();
+  renderAniversarios();
 }
 
 // ── CARDS RESUMO ──
